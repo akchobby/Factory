@@ -101,6 +101,27 @@ int8_t stream_sensor_data_normal_mode(struct bme280_dev *dev)
 }
 
 //---------------------------------------------------------
+//Check Alarm
+
+void checkThreshold(sensor_data_t *data, sensor_threshold_t *limits,int *Alarm){
+
+  if(data->id != 3){
+    if((data->value[data->id]) > (limits->threshold[data->id])){
+      Alarm[data->id] = 1;
+      //triggerAlarm();
+      }
+    }else{
+	for(int i=0; i<3 ; i++){
+	  if((data->value[i]) > (limits->threshold[i])){
+	    Alarm[i] = 1;
+	    
+	    //triggerAlarm();
+	  }
+	}
+      }
+}
+
+//---------------------------------------------------------
 //
 void initBme(){
   
@@ -136,7 +157,9 @@ void get_temperature(sensor_data_t *temp){
   
 	initBme();
 	stream_sensor_data_normal_mode(&dev);
-	temp->value[0] = all_data.temperature;
+	temp->value[temp->id] = all_data.temperature;
+	
+	
 	
 }
 
@@ -149,6 +172,7 @@ void get_pressure(sensor_data_t *pres){
 	stream_sensor_data_normal_mode(&dev);
 	pres->value[1] = all_data.pressure;
 	
+	
 }
 
 void get_humdity(sensor_data_t *humd){
@@ -159,6 +183,7 @@ void get_humdity(sensor_data_t *humd){
 	initBme();
 	stream_sensor_data_normal_mode(&dev);
 	humd->value[2]  = all_data.humidity;
+	
 }
 
 void get_all(sensor_data_t *data){
@@ -172,13 +197,23 @@ void get_all(sensor_data_t *data){
 	data->value[1] = all_data.pressure;
 	data->value[2]  = all_data.humidity;
 	
+	
 }
 
 //---------------------------------------------------------
-//Getters Sensor Thresholds
-void get_temperature_threshold(){
-  //TO DO ::::
+//setters Sensor Thresholds
+void set_temperature_threshold(double value, sensor_threshold_t *threshold_data){
+  threshold_data->threshold[0] = value;
 }
+
+void set_pressure_threshold(double value, sensor_threshold_t *threshold_data){
+  threshold_data->threshold[1] = value;
+}
+
+void set_humidity_threshold(double value, sensor_threshold_t *threshold_data){
+  threshold_data->threshold[2] = value;
+}
+
 
 //---------------------------------------------------------
 //Function for periodic task
@@ -187,8 +222,18 @@ void get_temperature_threshold(){
 void *task_bme(sensor_data_t *data)
 {
   int i;
+  int alarm[3] ={0,0,0};
+  sensor_threshold_t thres;
+  set_temperature_threshold(21,&thres);
+  set_pressure_threshold(100,&thres);
+  set_humidity_threshold(50,&thres);
   while(i<10){
     get_all(data);
+    checkThreshold(data,&thres, alarm);
+    for(int j =0;j<3;j++){
+      printf("Alarm %d is %d",j,alarm[j]);
+      }
+    print_sensor_data(data);
     //get_pressure(data);
     i++;
   }
@@ -200,14 +245,16 @@ int main (int argc ,char **argv){
 	pthread_t thread2;
 	int  iret2;
 	
+      
 	sensor_data_t sense_data;
+      
 	iret2 = pthread_create( &thread2, NULL, task_bme,&sense_data);
 
 	
 	pthread_join( thread2, NULL);
 	
 	printf("Thread 2 returns: %d\n",iret2); 
-	print_sensor_data(&sense_data);
+	
 	printf("%s \n", sense_data.cmd);
 	   
 	return 0;
