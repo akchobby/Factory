@@ -45,19 +45,34 @@ int8_t user_i2c_write(uint8_t id, uint8_t reg_addr, uint8_t *data, uint16_t len)
 
 //---------------------------------------------------------
 //
-void print_sensor_data(struct bme280_data *comp_data)
+void print_sensor_data(sensor_data_t *comp_data)
 {
-#ifdef BME280_FLOAT_ENABLE
-	printf("temperature:%0.2f*C   pressure:%0.2fhPa   humidity:%0.2f%%\r\n",comp_data->temperature, comp_data->pressure/100, comp_data->humidity);
-#else
-	printf("temperature:%ld*C   pressure:%ldhPa   humidity:%ld%%\r\n",comp_data->temperature, comp_data->pressure/100, comp_data->humidity);
-#endif
+  
+  switch(comp_data->id){
+    case 3: printf("temperature:%0.2f*C   pressure:%0.2fhPa   humidity:%0.2f%%\r\n",comp_data->value[0], comp_data->value[1]/100, comp_data->value[2]);
+	    break;
+	    
+    case 2: printf("humidity:%0.2f%%\r\n",comp_data->value[2]);
+	    break;
+	    
+    case 1: printf("pressure:%0.2fhPa\n",comp_data->value[1]/100); 
+	    break;
+	    
+    case 0: printf("temperature:%0.2f*C\n",comp_data->value[0]); 
+	    break;
+	    
+    default: printf("ERROR: Check connections");
+	    break;
+	    
+	  }
+
+
 }
 
 //---------------------------------------------------------
 //BME sensor get data
 
-int8_t stream_sensor_data_normal_mode(struct bme280_dev *dev,struct bme280_data *comp_data)
+int8_t stream_sensor_data_normal_mode(struct bme280_dev *dev)
 {
 	int8_t rslt;
 	uint8_t settings_sel;
@@ -69,12 +84,9 @@ int8_t stream_sensor_data_normal_mode(struct bme280_dev *dev,struct bme280_data 
 	dev->settings.osr_t = BME280_OVERSAMPLING_2X;
 	dev->settings.filter = BME280_FILTER_COEFF_16;
 	dev->settings.standby_time = BME280_STANDBY_TIME_62_5_MS;
+	
+	settings_sel = BME280_ALL_SETTINGS_SEL;
 
-	settings_sel = BME280_OSR_PRESS_SEL;
-	settings_sel |= BME280_OSR_TEMP_SEL;
-	settings_sel |= BME280_OSR_HUM_SEL;
-	settings_sel |= BME280_STANDBY_SEL;
-	settings_sel |= BME280_FILTER_SEL;
 	rslt = bme280_set_sensor_settings(settings_sel, dev);
 	rslt = bme280_set_sensor_mode(BME280_NORMAL_MODE, dev);
 
@@ -82,15 +94,15 @@ int8_t stream_sensor_data_normal_mode(struct bme280_dev *dev,struct bme280_data 
 
 	/* Delay while the sensor completes a measurement */
 	dev->delay_ms(70);
-	rslt = bme280_get_sensor_data(BME280_ALL, comp_data, dev);
-	print_sensor_data(comp_data);
+	rslt = bme280_get_sensor_data(BME280_ALL, &all_data, dev);
+	//print_sensor_data(&all_data);
 
 	return rslt;
 }
 
 //---------------------------------------------------------
 //
-void initSensors(){
+void initBme(){
   
   
   int8_t rslt = BME280_OK;
@@ -115,27 +127,88 @@ void initSensors(){
   }
 
 //---------------------------------------------------------
-//Function for periodic task
-void *task_bme(struct bme280_data *comp_data)
-{
+//Getters Sensor Vals
+
+void get_temperature(sensor_data_t *temp){
+	
+	temp->id = 0;
+	strcpy(temp->cmd, "R_TEM");
   
-  stream_sensor_data_normal_mode(&dev,comp_data);
+	initBme();
+	stream_sensor_data_normal_mode(&dev);
+	temp->value[0] = all_data.temperature;
+	
 }
 
+void get_pressure(sensor_data_t *pres){
+  
+	pres->id = 1;
+	strcpy(pres->cmd, "R_PRE");
+
+	initBme();
+	stream_sensor_data_normal_mode(&dev);
+	pres->value[1] = all_data.pressure;
+	
+}
+
+void get_humdity(sensor_data_t *humd){
+  
+	humd->id = 2;
+	strcpy(humd->cmd, "R_HUM");
+    
+	initBme();
+	stream_sensor_data_normal_mode(&dev);
+	humd->value[2]  = all_data.humidity;
+}
+
+void get_all(sensor_data_t *data){
+  
+	data->id = 3;
+	strcpy(data->cmd, "R_BME");
+	
+	initBme();
+	stream_sensor_data_normal_mode(&dev);
+	data->value[0] = all_data.temperature;
+	data->value[1] = all_data.pressure;
+	data->value[2]  = all_data.humidity;
+	
+}
+
+//---------------------------------------------------------
+//Getters Sensor Thresholds
+void get_temperature_threshold(){
+  //TO DO ::::
+}
+
+//---------------------------------------------------------
+//Function for periodic task
+
+#ifdef TEST
+void *task_bme(sensor_data_t *data)
+{
+  int i;
+  while(i<10){
+    get_all(data);
+    //get_pressure(data);
+    i++;
+  }
+  
+}
 //--------------------------------------------------------------------------
 //
-#ifdef TEST
 int main (int argc ,char **argv){	
 	pthread_t thread2;
 	int  iret2;
-	struct bme280_data comp_data;
-	initSensors();
-	iret2 = pthread_create( &thread2, NULL, task_bme, &comp_data);
+	
+	sensor_data_t sense_data;
+	iret2 = pthread_create( &thread2, NULL, task_bme,&sense_data);
 
-
+	
 	pthread_join( thread2, NULL);
 	
 	printf("Thread 2 returns: %d\n",iret2); 
+	print_sensor_data(&sense_data);
+	printf("%s \n", sense_data.cmd);
 	   
 	return 0;
 	}
