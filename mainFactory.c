@@ -30,12 +30,32 @@
 // SYNCHRONIZATION MECHANISMS
 
 sem_t sem_IC_FF, sem_FF_EO; 
+PacketStorage pck;
 
 // COMMUNICATION INSTRUMENTS
 
 // THREAD FUNCTIONS (CAN BE MOVED TO OTHER PLACES)
 
-// MAIN FUNCTION
+void SendDataPeriodic(void* period_str) {
+	
+	// Declare semaphore to make sure the function waits
+	sem_t SDP_sem;
+	// Declare time structure to store the abs. time
+	struct timespec trigger_time;
+	struct timespec *period = (struct timespec *) period_str;
+	// Initialize semaphore
+	sem_init(&SDP_sem, 0, 0);
+	// Get absolute time into the created timespec struct
+	clock_gettime(CLOCK_REALTIME, &trigger_time);
+	
+	while(1) {
+	trigger_time.tv_sec += period->tv_sec;
+	sem_timedwait(&SDP_sem, &trigger_time);
+	
+	
+	}
+	pthread_exit(NULL);
+}
 
 int main(void) {
 	
