@@ -34,6 +34,8 @@
 
 #define ENABLE  0b00000100 // Enable bit
 
+#define I2C_ADDR   0x27 // I2C device address
+
 void lcd_start(void);
 void lcd_init(void);
 void lcd_byte(int bits, int mode);
@@ -50,7 +52,7 @@ void print_sensor_data_(sensor_data_t *comp_data);
 void display_alarm(void);
 
 int fd;  // seen by all subroutines
-char lcdMessage[16] = "Normal operation";
+char lcdMessage[16] = "Normal";
 
 void print_sensor_data_(sensor_data_t *comp_data)
 {
@@ -85,7 +87,7 @@ void display_alarm()
 // float to string
 void typeFloat(float myFloat)   {
   char buffer[20];
-  sprintf(buffer, "%4.0f",  myFloat);
+  sprintf(buffer, "%.0f",  myFloat);
   typeln(buffer);
 }
 
@@ -152,6 +154,8 @@ void lcd_toggle_enable(int bits)   {
 
 
 void lcd_init(){
+  if (wiringPiSetup () == -1) exit (1);
+  fd = wiringPiI2CSetup(I2C_ADDR);
   // Initialise display
   lcd_byte(0x33, LCD_CMD); // Initialise
   lcd_byte(0x32, LCD_CMD); // Initialise
@@ -159,7 +163,7 @@ void lcd_init(){
   lcd_byte(0x0C, LCD_CMD); // 0x0F On, Blink Off
   lcd_byte(0x28, LCD_CMD); // Data length, number of lines, font size
   lcd_byte(0x01, LCD_CMD); // Clear display
-  delayMicroseconds(1000);
+  delayMicroseconds(200);
 }
 
 void lcd_start(){

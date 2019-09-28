@@ -258,6 +258,7 @@ void* SendDataPeriodic(void* period_str) {
 		sem_timedwait(&SDP_sem, &trigger_time);
 		// GET ALL VALUES FROM THE SENSOR
 		get_all(&PSD);
+		lcdDisplay_thread(&PSD);
 		// SEND TO DASHBOARDS AND FACTORIES
 		response_period(&PSD, buffer_out);
 		PacketStorage_write(periodic_pck, buffer_out);

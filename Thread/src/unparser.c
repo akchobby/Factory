@@ -11,7 +11,7 @@ void response_period(sensor_data_t *data, char* unparse){
 	strcat(unparse, cpyvalue);
 	bzero(cpyvalue, sizeof(cpyvalue));
 	strcat(unparse, ",Pressure:");
-	snprintf(cpyvalue, 6, "%0.2f", data->value[1]);
+	snprintf(cpyvalue, 6, "%0.2f", data->value[1]/100);
 	strcat(unparse, cpyvalue);
 	bzero(cpyvalue, sizeof(cpyvalue));
 	strcat(unparse, ",Humidity:");

@@ -22,7 +22,7 @@ void changeRelayState (actuator_data_t *relayState);
 void displayMessage (actuator_data_t *lcdState);
 void triggerAlarm(actuator_data_t *alarmState);
 void *alarm_function();
-void *lcdDisplay_thread (void *arg);
+void lcdDisplay_thread (sensor_data_t *comp_data);
 
 
 #ifdef TEST
@@ -109,19 +109,12 @@ void *alarm_function() {
 	return NULL;
 }
 
-void *lcdDisplay_thread (void *arg){
-  struct sensor_data *comp_data =(struct sensor_data*)arg;
-  while(1){
-    sleep(70);
+void lcdDisplay_thread (sensor_data_t *comp_data){
+    //sleep(70);
     if (alarm_ == 0){ 
-    	if (wiringPiSetup () == -1) exit (1);
-  		wiringPiI2CSetup(I2C_ADDR);
         lcd_start();
         print_sensor_data_(comp_data);
     } else {
       
-    }
   }
-  
-  pthread_exit (0);
 }

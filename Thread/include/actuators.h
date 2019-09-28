@@ -1,6 +1,8 @@
 #ifndef _actuators_h
 #define _actuators_h
 
+#include "sensors.h"
+
 typedef struct actuator_data{
 	char cmd[10];
 	int led_nb;
@@ -20,6 +22,6 @@ void getAlarm(actuator_data_t *);
 void getActuatorList(actuator_data_t *);
 void triggerAlarm(actuator_data_t *);
 void *alarm_function();
-void *lcdDisplay_thread (void *);
+void lcdDisplay_thread (sensor_data_t *);
 
 #endif
