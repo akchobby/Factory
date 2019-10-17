@@ -1,0 +1,54 @@
+FUNCTIONS TO IMPLEMENT:
+
+FACTORY INITIALIZATION:
+
+	- Choose communication ports
+	- Open communication channel between Dashboard and Factory X
+	- Pass port information to other factories
+	- Open communication channel between Factory X and Factory Y
+	- Integration in priority system of the new factory
+	
+
+GENERIC COMMUNICATION:
+
+	
+	- Start communication between Dashboard and Factory X
+	- Start communication between Factory X and Factory Y
+	- End communication between Dashboard and Factory X
+	- End communication between Factory X and Factory Y
+	- Broadcast alarm status
+	- Receive alarm status
+	- Broadcast information to other Factories every 5 seconds
+	- Receive information from Factory X every 5 seconds
+	
+GPIO CONTROL:
+
+	- GPIO list
+	- GPIO status (indiv / all)
+	- Set GPIO state (high / low)
+	- Set GPIO config (in / out)
+	
+EXTERNAL INTERACTION WITH ACTUATORS:
+
+	- Get list of actuators
+	- Get Actuator X status
+	- Set Actuator X status
+	- Get Actuator X config
+	- Set Actuator X config
+	
+
+EXTERNAL INTERACTION WITH SENSORS:
+
+	- Get list of sensors
+	- Set threshold for Sensor X
+	- Get value of Sensor X
+
+SENSOR HANDLING:
+
+	- Retrieve value from Sensor X
+	- Check thresholds
+	- Trigger alarm
+
+	
+
+	
