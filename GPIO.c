@@ -41,9 +41,14 @@ int main() {
 	
 	//get_GPIO_state(0);
 	//printf("Result: %d %d\n", GPIO_R.GPIO_state, GPIO_R.GPIO_dir);
-	get_GPIO_dir(1);
-	get_GPIO_dir(7); 
-	
+	get_GPIO_dir(25);
+	printf("%s %d\n", GPIO_R.cmd, GPIO_R.GPIO_dir);
+	get_GPIO_state(25);
+	printf("%s %d\n", GPIO_R.cmd, GPIO_R.GPIO_state);
+	get_GPIO_dir(26);
+	printf("%s %d\n", GPIO_R.cmd, GPIO_R.GPIO_dir);
+	get_GPIO_state(26);
+	printf("%s %d\n", GPIO_R.cmd, GPIO_R.GPIO_state);
 	return 0;
 }
 
@@ -126,13 +131,15 @@ void get_GPIO_dir(int pin_nb) {
 	FILE* fp = popen(command2, "r");
 	fscanf(fp,"%s", resp);
 	pclose(fp);
-	system(command3);
+	//system(command3);
+	
+	printf("%s!\n",resp);
 	
 	
-	if (strcmp(resp,"in")==1) {
-		GPIO_R.GPIO_dir = (bool) 1;
-	} else {
+	if (strcmp(resp,"out")==1) {
 		GPIO_R.GPIO_dir = (bool) 0;
+	} else {
+		GPIO_R.GPIO_dir = (bool) 1;
 	}
 	
 	
