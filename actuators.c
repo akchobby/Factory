@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <wiringPi.h>
 #include <wiringPiI2C.h>
 #include <string.h>
 #include <stdlib.h>
@@ -10,6 +11,9 @@
 #include "bme280.h"
 #include "i2clcd.h"
 #include "GPIO.h"
+
+// Define some device parameters
+#define I2C_ADDR   0x27 // I2C device address
 
 void ledOn (int led_nb);
 void ledOff (int led_nb);
@@ -64,6 +68,9 @@ void *lcdDisplay_thread (void *arg){
   while(1){
     sleep(70);
     if ((*comp_data).alarm == 0){ 
+    	if (wiringPiSetup () == -1) exit (1);
+  		fd = wiringPiI2CSetup(I2C_ADDR);
+      lcd_start();
       print_sensor_data(comp_data);
     } else {
       display_alarm();
@@ -72,3 +79,5 @@ void *lcdDisplay_thread (void *arg){
   
   pthread_exit (0);
 }
+
+
