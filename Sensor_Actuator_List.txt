@@ -3,13 +3,13 @@ LIST OF SENSORS AND ACTUATORS IN THE FACTORY:
 
 SENSORS:
 
-	- BME280
+	- BME280 (I2C as in example)
 	- PUSH BUTTON
 		- LAST TIME PUSHED
 
 
 ACTUATORS:
 
-	- LED (x2)
-	- RELAY
-	- LCD
+	- LED (x2) - GPIO 24/25
+	- RELAY - GPIO 23
+	- LCD (I2C as in example)
