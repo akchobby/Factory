@@ -19,6 +19,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+typedef struct GPIO_RESPONSE GPIO_RESPONSE;
+
 struct GPIO_RESPONSE {
 	char cmd[10];
 	short GPIO_nb;
@@ -31,10 +33,11 @@ void get_GPIO_state(int pin_nb);
 void set_GPIO_state(int pin_nb, bool pin_state);
 void set_GPIO_dir(int pin_nb, bool pin_dir);
 void get_GPIO_dir(int pin_nb);
+void set_GPIO_res(int pin_nb, int res_mode);
 
-struct GPIO_RESPONSE GPIO_R;
+GPIO_RESPONSE GPIO_R;
 
-/*int main() {
+int main() {
 	
 	//get_GPIO_state(0);
 	//printf("Result: %d %d\n", GPIO_R.GPIO_state, GPIO_R.GPIO_dir);
@@ -42,7 +45,7 @@ struct GPIO_RESPONSE GPIO_R;
 	get_GPIO_dir(7); 
 	
 	return 0;
-}*/
+}
 
 void get_GPIO_state(int pin_nb) {
 	
@@ -52,7 +55,7 @@ void get_GPIO_state(int pin_nb) {
 	// Read the value of the pin, write in the structure
 	GPIO_R.GPIO_state = (bool) digitalRead(pin_nb);
 	
-	GPIO_R.cmd = "R_G_GPIO_S";
+	strcpy(GPIO_R.cmd, "R_G_GPIO_S");
 	
 }
 
@@ -74,7 +77,7 @@ void set_GPIO_state(int pin_nb, bool pin_state) {
 	
 	GPIO_R.GPIO_state = (bool) digitalRead(pin_nb);
 	
-	GPIO_R.cmd = "R_S_GPIO_S";
+	strcpy(GPIO_R.cmd, "R_S_GPIO_S");
 	
 }
 
@@ -133,7 +136,7 @@ void get_GPIO_dir(int pin_nb) {
 	}
 	
 	
-	GPIO_R.cmd = "R_G_GPIO_D";
+	strcpy(GPIO_R.cmd, "R_G_GPIO_D");
 	
 }
 
@@ -156,7 +159,7 @@ void set_GPIO_dir(int pin_nb, bool pin_dir) {
 	// Call get_GPIO_dir but don't write o
 	get_GPIO_dir(pin_nb);
 	
-	GPIO_R.cmd = "R_S_GPIO_D";
+	strcpy(GPIO_R.cmd, "R_S_GPIO_D");
 	
 }
 
@@ -182,6 +185,6 @@ void set_GPIO_res(int pin_nb, int res_mode) {
 	
 	GPIO_R.GPIO_intres = (short) res_mode;
 	
-	GPIO_R.cmd = "R_S_GPIO_R";
+	strcpy(GPIO_R.cmd, "R_S_GPIO_R");
 	
 }
