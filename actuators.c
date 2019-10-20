@@ -6,13 +6,15 @@
 #include <linux/i2c-dev.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <stdbool.h>
 #include "bme280.h"
 #include "i2clcd.h"
+#include "GPIO.h"
 
 void ledOn (int led_nb);
 void ledOff (int led_nb);
-void relayHigh ();
-void relayLow ();
+void relayHigh (void);
+void relayLow (void);
 
 #ifdef TEST
 int main(struct bme280_data *comp_data, int * alarm_state){
@@ -30,19 +32,31 @@ int main(struct bme280_data *comp_data, int * alarm_state){
 #endif
 
 void ledOn (int led_nb) {
-  // llamar a la funcion de joan gpio
+	if (led_nb == 1){
+  	set_GPIO_state(19, true);
+	} else if (led_nb == 2) {
+		set_GPIO_state(26, true);
+	} else {
+		printf("Error while trying to change LED state.\n");
+	}
 }
 
 void ledOff (int led_nb) {
-  // llamar a la funcion de joan gpio
+  if (led_nb == 1){
+  	set_GPIO_state(19, false);
+	} else if (led_nb == 2) {
+		set_GPIO_state(26, false);
+	} else {
+		printf("Error while trying to change LED state.\n");
+	}
 }
 
 void relayHigh () {
-  // llamar a la funcion de joan gpio
+  set_GPIO_state(13, true);
 }
 
 void relayLow () {
-  // llamar a la funcion de joan gpio
+  set_GPIO_state(13, false);
 }
 
 void *lcdDisplay_thread (void *arg){
@@ -53,7 +67,6 @@ void *lcdDisplay_thread (void *arg){
       print_sensor_data(comp_data);
     } else {
       display_alarm();
-      // led_alarm();
     }
   }
   
