@@ -2,37 +2,106 @@ FACTORY COMMANDS
 
 
 - REQUEST STRINGS
-	BME Sensor
-		-G_TEM: get sensor temperature
-		-G_PRE: get sensor pressure
-		-G_HUM: get sensor humidity
+	FACTORY INITIALIZATION:
+		-G_POR: get communication port information
+		-S_POR: set communication port
+		-S_CMC_D: set communication channel with dashboard as open/closed
+		-S_CMC_F: set communication channel with other factory as open/closed
+
+	FACTORY COMMUNICATION:
+		-S_CMS_D: start/end communication with dashboard
+		-S_CMS_F: start/end communication with factory
+		-S_BCS_D: start/end periodic information broadcasting with dashboard
+		-S_BCS_F: start/end periodic information broadcasting with factory (can be bidirectional or unidirectional)
+		
+	GENERIC INTERACTION WITH SENSORS:
+		-G_SEL: get sensor list
+
+	-BME Sensor
+		-G_TEV: get sensor temperature
+		-G_PRV: get sensor pressure
+		-G_HUV: get sensor humidity
+		-G_TET: get sensor temperature threshold
+		-G_PRT: get sensor pressure threshold
+		-G_HUT: get sensor humidity threshold
+		-S_TET: set sensor temperature threshold
+		-S_PRT: set sensor pressure threshold
+		-S_HUT: set sensor humidity threshold
 		-G_BME: get sensor temperature, pressure and humidity
+
+	GENERIC INTERACTION WITH ACTUATORS:
+		-G_ACL: get actuator list
+
+	-LED
+		-S_LED: set LED state
+
+	-RELAY	
+		-S_REL: set relay state
+
+	-DISPLAY
+		-S_LCD: print a string in the LCD display
 
 	ALARM
 		-G_ALA: get factory alarm state
 		-S_ALA: set factory alarm state
-	
-	DISPLAY
-		-S_LCD: print a string in the LCD display
 
 	GPIO
-		-G_GIO_S: get GPIO state
-		-S_GIO_S: set GPIO state
-		-G_GIO_D: get GPIO direction
-		-S_GIO_D: set GPIO direction
-		-S_GIO_R: set GPIO res mode
+		-G_IOL: get GPIO list
+		-G_IOS: get GPIO state
+		-S_IOS: set GPIO state
+		-G_IOD: get GPIO direction
+		-S_IOD: set GPIO direction
+		-S_IOR: set GPIO res mode
 
 
 - ANSWER STRINGS
-	BME Sensor
-		-R_TEM: receive sensor temperature
-		-R_PRE: receive sensor pressure
-		-R_HUM: receive sensor humidity
+	FACTORY INITIALIZATION:
+		-R_POR: receive communication port information
+		-A_POR: receive set communication port acknowledge
+		-A_CMC_D: receive communication channel with dashboard as open/closed acknowledge
+		-A_CMC_F: set communication channel with other factory as open/closed acknowledge
+
+	FACTORY COMMUNICATION:
+		-A_CMS_D: receive start/end communication with dashboard acknowledge
+		-A_CMS_F: receive start/end communication with factory acknowledge
+		-A_BCS_D: receive start/end periodic information broadcasting with dashboard acknowledge
+		-A_BCS_F: receive start/end periodic information broadcasting with factory (can be bidirectional or unidirectional) acknowledge
+
+	GENERIC INTERACTION WITH SENSORS:
+		-R_SEL: receive sensor list
+
+	-BME Sensor
+		-R_TEV: receive sensor temperature
+		-R_PRV: receive sensor pressure
+		-R_HUV: receive sensor humidity
+		-R_TET: receive sensor temperature threshold
+		-R_PRT: receive sensor pressure threshold
+		-R_HUT: receive sensor humidity threshold
+		-A_TET: receive set sensor temperature threshold acknowledge
+		-A_PRT: receive set sensor pressure threshold acknowledge
+		-A_HUT: receive set sensor humidity threshold acknowledge
 		-R_BME: receive sensor temperature, pressure and humidity
+
+	GENERIC INTERACTION WITH ACTUATORS:
+		-R_ACL: receive actuator list
+
+	-LED
+		-A_LED: receive set LED state acknowledge
+
+	-RELAY	
+		-A_REL: receive set relay state acknlowledge
+
+	-DISPLAY
+		-A_LCD: receive LCD display acknowledge
 
 	ALARM
 		-R_ALA: receive factory alarm state
+		-A_ALA: receive set factory alarm state acknowledge
 
 	GPIO
-		-R_GIO_S: receive GPIO state
-		-R_GIO_D: receive GPIO direction
+		-R_IOL: receive GPIO list
+		-R_IOS: receive GPIO state
+		-A_IOS: receive set GPIO state acknowledge
+		-R_IOD: receive GPIO direction
+		-A_IOD: receive set GPIO direction acknowledge
+		-A_IOR: receive set GPIO res mode acknowledge
