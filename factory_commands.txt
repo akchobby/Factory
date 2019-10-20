@@ -1,0 +1,38 @@
+FACTORY COMMANDS
+
+
+- REQUEST STRINGS
+	BME Sensor
+		-G_TEM: get sensor temperature
+		-G_PRE: get sensor pressure
+		-G_HUM: get sensor humidity
+		-G_BME: get sensor temperature, pressure and humidity
+
+	ALARM
+		-G_ALA: get factory alarm state
+		-S_ALA: set factory alarm state
+	
+	DISPLAY
+		-S_LCD: print a string in the LCD display
+
+	GPIO
+		-G_GIO_S: get GPIO state
+		-S_GIO_S: set GPIO state
+		-G_GIO_D: get GPIO direction
+		-S_GIO_D: set GPIO direction
+		-S_GIO_R: set GPIO res mode
+
+
+- ANSWER STRINGS
+	BME Sensor
+		-R_TEM: receive sensor temperature
+		-R_PRE: receive sensor pressure
+		-R_HUM: receive sensor humidity
+		-R_BME: receive sensor temperature, pressure and humidity
+
+	ALARM
+		-R_ALA: receive factory alarm state
+
+	GPIO
+		-R_GIO_S: receive GPIO state
+		-R_GIO_D: receive GPIO direction
