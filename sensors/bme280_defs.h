@@ -298,8 +298,7 @@ struct bme280_data {
 	double temperature;
 	/*! Compensated humidity */
 	double humidity;
-	/*! Alarm State*/
-	int alarm;
+
 };
 #else
 struct bme280_data {
@@ -309,8 +308,7 @@ struct bme280_data {
 	int32_t temperature;
 	/*! Compensated humidity */
 	uint32_t humidity;
-	/*! Alarm State*/
-	int alarm;
+	
 };
 #endif /* BME280_USE_FLOATING_POINT */
 
