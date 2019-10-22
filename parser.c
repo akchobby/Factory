@@ -1,7 +1,7 @@
 #include "parser.h"
 
 
-parsed_data_t* parse_packet(packet_t pck){
+parsed_data_t* parse_packet(char* pck){
 	parsed_data_t data;
 	data.alarm_state[0] =0;
 	data.alarm_state[1] =0;
@@ -9,9 +9,9 @@ parsed_data_t* parse_packet(packet_t pck){
 	parsed_data_t* dashboardCmd = malloc(sizeof(parsed_data_t));
 	char buffer[200];
 	#ifdef TEST
-	strncpy(buffer, "cmd:G_IOS, threshold:26",sizeof(buffer) -1);
+	strncpy(buffer, "cmd:S_LCD, msg:YOMAN",sizeof(buffer) -1);
 	#else
-	unmake_packet(buffer,pck);
+	strcpy(buffer,pck);
 	#endif
 	char *p;
 	p = strtok(buffer, " :, ");
@@ -111,6 +111,13 @@ parsed_data_t* parse_packet(packet_t pck){
 	
 		
 	} else if(strcmp(data.cmd, "S_LCD")==0) {
+		//message
+		for(int i = 0;i<2;i++){
+		p = strtok(NULL, " :, ");
+		}
+		strncpy(data.lcd_msg,p,sizeof(data.lcd_msg)); 
+
+		
 		
 		
 	} else if(strcmp(data.cmd, "G_ALA")==0) {
@@ -227,7 +234,7 @@ parsed_data_t* parse_packet(packet_t pck){
 	}
 #ifdef TEST
 int main(){
-	packet_t pck;
+	char* pck;
 	free(parse_packet(pck));
 	return 0;
 	
