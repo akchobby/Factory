@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <fcntl.h>
+#include <string.h>
 
 // Define some device constants
 #define LCD_CHR  1 // Mode - Sending data
@@ -76,7 +77,7 @@ void display_alarm()
     //ClrLcd();
     //lcdLoc(LINE1);
     lcdLoc(LINE2);
-    strcpy(lcdMessage, newMessage);
+    strcpy(lcdMessage, "     Alarm!");
     
 }
 
