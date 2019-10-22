@@ -15,6 +15,8 @@
 // Define some device parameters
 #define I2C_ADDR   0x27 // I2C device address
 
+int alarm = 0;
+
 void ledOn (int led_nb);
 void ledOff (int led_nb);
 void relayHigh (void);
@@ -63,15 +65,23 @@ void relayLow () {
   set_GPIO_state(13, false);
 }
 
+void triggerAlarm(int alarmState){
+	if (alarmState==0){
+		alarm = 0;
+	} else {
+		alarm = 1;
+	}
+}
+
 void *lcdDisplay_thread (void *arg){
-  struct bme280_data *comp_data =(struct bme280_data*)arg;
+  struct sensor_data *comp_data =(struct sensor_data*)arg;
   while(1){
     sleep(70);
-    if ((*comp_data).alarm == 0){ 
+    if (alarm == 0){ 
     	if (wiringPiSetup () == -1) exit (1);
   		fd = wiringPiI2CSetup(I2C_ADDR);
-      lcd_start();
-      print_sensor_data(comp_data);
+        lcd_start();
+        print_sensor_data(comp_data);
     } else {
       display_alarm();
     }
