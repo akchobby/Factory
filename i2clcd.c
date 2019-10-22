@@ -22,10 +22,6 @@
 #include <sys/types.h>
 #include <fcntl.h>
 
-
-// Define some device parameters
-#define I2C_ADDR   0x27 // I2C device address
-
 // Define some device constants
 #define LCD_CHR  1 // Mode - Sending data
 #define LCD_CMD  0 // Mode - Sending command
@@ -152,7 +148,7 @@ void lcd_toggle_enable(int bits)   {
 }
 
 
-void lcd_init()   {
+void lcd_init(){
   // Initialise display
   lcd_byte(0x33, LCD_CMD); // Initialise
   lcd_byte(0x32, LCD_CMD); // Initialise
@@ -164,9 +160,6 @@ void lcd_init()   {
 }
 
 void lcd_start(){
-  if (wiringPiSetup () == -1) exit (1);
-
-  fd = wiringPiI2CSetup(I2C_ADDR);
 
   lcd_init(); // setup LCD
 }
