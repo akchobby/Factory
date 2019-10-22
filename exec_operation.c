@@ -12,83 +12,74 @@
 #include "sensors.h"
 
 void requestHandle(parsed_data_t commandData) {
-	if (strcmp(commandData->cmd, 'G_POR')){
+	if (strcmp(commandData->cmd, "G_POR") == 0){
 		
-	} else if(strcmp(commandData->cmd, 'S_POR')) {
+	} else if(strcmp(commandData->cmd, "S_POR") == 0) {
 		
-	} else if(strcmp(commandData->cmd, 'S_CMC_D')) {
+	} else if(strcmp(commandData->cmd, "S_CMC_D") == 0) {
 		
-	} else if(strcmp(commandData->cmd, 'S_CMC_F')) {
+	} else if(strcmp(commandData->cmd, "S_CMC_F") == 0) {
 		
-	} else if(strcmp(commandData->cmd, 'S_CMS_D')) {
+	} else if(strcmp(commandData->cmd, "S_CMS_D") == 0) {
 		
-	} else if(strcmp(commandData->cmd, 'S_CMS_F')) {
+	} else if(strcmp(commandData->cmd, "S_CMS_F") == 0) {
 	
-	} else if(strcmp(commandData->cmd, 'G_SEL')) {
+	} else if(strcmp(commandData->cmd, "G_SEL") == 0) {
 		
-	} else if(strcmp(commandData->cmd, 'G_TEV')) {
+	} else if(strcmp(commandData->cmd, "G_TEV") == 0) {
 		get_temperature(&commandData);
 		
-	} else if(strcmp(commandData->cmd, 'G_PRV')) {
+	} else if(strcmp(commandData->cmd, "G_PRV") == 0) {
 		get_pressure(&commandData);
 		
-	} else if(strcmp(commandData->cmd, 'G_HUV')) {
+	} else if(strcmp(commandData->cmd, "G_HUV") == 0) {
 		get_humdity(&commandData);
 		
-	} else if(strcmp(commandData->cmd, 'G_TET')) {
+	} else if(strcmp(commandData->cmd, "S_TET") == 0) {
+		set_temperature_threshold(commandData->temp_threshold, &commandData);
+		
+	} else if(strcmp(commandData->cmd, "S_PRT") == 0) {
+		set_pressure_threshold(commandData->pres_threshold, &commandData)
+		
+	} else if(strcmp(commandData->cmd, "S_HUT") == 0) {
+		set_pressure_threshold(commandData->hum_threshold, &commandData)
+		
+	} else if(strcmp(commandData->cmd, "G_BME") == 0) {
 		get_all(&commandData);
 		
-	} else if(strcmp(commandData->cmd, 'G_TET')) {
+	} else if(strcmp(commandData->cmd, "G_ACL") == 0) {
+		getActuatorList(&commandData);
 		
-	} else if(strcmp(commandData->cmd, 'G_PRT')) {
-		
-	} else if(strcmp(commandData->cmd, 'G_TET')) {
-		
-	} else if(strcmp(commandData->cmd, 'G_HUT')) {
-		
-	} else if(strcmp(commandData->cmd, 'S_TET')) {
-		
-	} else if(strcmp(commandData->cmd, 'S_PRT')) {
-		
-	} else if(strcmp(commandData->cmd, 'S_HUT')) {
-		
-	} else if(strcmp(commandData->cmd, 'G_BME')) {
-		
-	} else if(strcmp(commandData->cmd, 'G_ACL')) {
-		
-	} else if(strcmp(commandData->cmd, 'S_LED')) {
+	} else if(strcmp(commandData->cmd, "S_LED") == 0) {
 		changeLedState(&commandData);
 		
-	} else if(strcmp(commandData->cmd, 'S_REL')) {
+	} else if(strcmp(commandData->cmd, "S_REL") == 0) {
 		changeRelayState(&commandData);
 		
-	} else if(strcmp(commandData->cmd, 'S_LCD')) {
+	} else if(strcmp(commandData->cmd, "S_LCD") == 0) {
 		displayMessage(&commandData);
 		
-	} else if(strcmp(commandData->cmd, 'G_ALA')) {
+	} else if(strcmp(commandData->cmd, "G_ALA") == 0) {
 		//sem_post(&sem_EO_AL);
 		getAlarm(&commandData);
 		
-	} else if(strcmp(commandData->cmd, 'S_ALA')) {
+	} else if(strcmp(commandData->cmd, "S_ALA") == 0) {
 		sem_post(&sem_EO_AL);
 		setAlarm(&commandData);
 		
-	} else if(strcmp(commandData->cmd, 'G_IOL')) {
-		
-		
-	} else if(strcmp(commandData->cmd, 'G_IOS')) {
+	} else if(strcmp(commandData->cmd, "G_IOS") == 0) {
 		get_GPIO_state(&commandData, commandData->GPIO_nb);
 		
-	} else if(strcmp(commandData->cmd, 'S_IOS')) {
+	} else if(strcmp(commandData->cmd, "S_IOS") == 0) {
 		set_GPIO_state(&commandData, commandData->GPIO_nb, commandData->GPIO_state);
 		
-	} else if(strcmp(commandData->cmd, 'G_IOD')) {
+	} else if(strcmp(commandData->cmd, "G_IOD") == 0) {
 		set_GPIO_dir(&commandData, commandData->GPIO_nb, commandData->GPIO_dir);
 		
-	} else if(strcmp(commandData->cmd, 'S_IOD')) {
+	} else if(strcmp(commandData->cmd, "S_IOD") == 0) {
 		get_GPIO_dir(&commandData, commandData->GPIO_nb);
 		
-	} else if(strcmp(commandData->cmd, 'S_IOR')) {
+	} else if(strcmp(commandData->cmd, "S_IOR") == 0) {
 		set_GPIO_res(&commandData, commandData->GPIO_nb, commandData->GPIO_res_mode);
 	}
 		
