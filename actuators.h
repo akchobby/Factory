@@ -8,7 +8,7 @@ typedef struct actuator_data{
 	int relay_state;
 	char message[16];
 	int alarm;
-	char actuator_list[];
+	char *actuator_list[];
 	int id;
 	
 }actuator_data_t;
