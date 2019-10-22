@@ -9,7 +9,7 @@ parsed_data_t* parse_packet(char* pck){
 	parsed_data_t* dashboardCmd = malloc(sizeof(parsed_data_t));
 	char buffer[200];
 	#ifdef TEST
-	strncpy(buffer, "cmd:S_LCD, msg:YOMAN",sizeof(buffer) -1);
+	strncpy(buffer, "cmd:S_TET, msg:26",sizeof(buffer) -1);
 	#else
 	strcpy(buffer,pck);
 	#endif
