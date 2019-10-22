@@ -7,9 +7,9 @@ typedef struct actuator_data{
 	int led_state;
 	int relay_state;
 	char message[16];
-	int alarm;
-	char *actuator_list[];
+	int alarm_;
 	int id;
+	char *actuator_list[];
 	
 }actuator_data_t;
 
@@ -17,8 +17,9 @@ void changeLedState (actuator_data_t *);
 void changeRelayState (actuator_data_t *);
 void displayMessage (actuator_data_t *);
 void getAlarm(actuator_data_t *);
+void getActuatorList(actuator_data_t *);
 void triggerAlarm(actuator_data_t *);
-void *alarm_function(void *);
+void *alarm_function();
 void *lcdDisplay_thread (void *);
 
 #endif

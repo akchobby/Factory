@@ -6,11 +6,12 @@
 #include <limits.h>
 #include <string.h>
 //#include "Periodic_Data.h"
+#include "FIFO_Stack.h"
 
 #define BUFFER_SIZE 256
 #define CAPACITY 20
 
-typedef struct STACK STACK;
+/*typedef struct STACK STACK;
 
 struct STACK {
 	
@@ -19,7 +20,7 @@ struct STACK {
 	int nb_elem;
 	int array[CAPACITY]; 
 	
-};
+};*/
 
 void StackInit(STACK *p_stack) {
 	//p_stack->array = {[0 ... CAPACITY-1] = INT_MAX};

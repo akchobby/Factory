@@ -24,12 +24,20 @@
 #include <semaphore.h>
 #include <time.h>
 #include <string.h>
+#include <stdbool.h>
+#include <linux/i2c-dev.h>
+//#include <unistd.h>
 
 // CUSTOM LIBRARIES
 
 #include "FIFO_Stack.h"
 #include "packet_storage.h"
+#include "actuators.h"
+#include "GPIO.h"
+#include "parsed_storage.h"
+#include "parser.h"
 #include "sensors.h"
+#include "bme280.h"
 
 // PREDEFINED VALUES
 
@@ -45,12 +53,104 @@ sem_t sem_IC_FF, sem_FF_EO, sem_EO_AL;
 
 // Initialize packet storage as global
 PacketStorage pck_s;
+ParsedStorage parsed_s;
+
+sensor_threshold_t threshold_data;
 
 // THREAD FUNCTIONS (CAN BE MOVED TO OTHER PLACES)
 
 void* ExecOperation(void *no_arg) {
+	parsed_data_t *commandData = malloc(sizeof(parsed_data_t));
 	// Wait for semaphore to synchronize with FF
-	sem_wait(&sem_FF_EO);
+	while(1) {
+		sem_wait(&sem_FF_EO);
+		ParsedStorage_read(parsed_s, commandData);
+		
+		if(strcmp(commandData->cmd, "S_CMS_D") == 0) {
+		
+		} else if(strcmp(commandData->cmd, "S_CMS_F") == 0) {
+			
+		} else if(strcmp(commandData->cmd, "G_SEL") == 0) {
+			
+		} else if(strcmp(commandData->cmd, "G_TEV") == 0) {
+			sensor_data_t *temp = malloc(sizeof(sensor_data_t));
+			get_temperature(temp);
+			
+		} else if(strcmp(commandData->cmd, "G_PRV") == 0) {
+			sensor_data_t *pres = malloc(sizeof(sensor_data_t));
+			get_pressure(pres);
+			
+		} else if(strcmp(commandData->cmd, "G_HUV") == 0) {
+			sensor_data_t *humd = malloc(sizeof(sensor_data_t));
+			get_humdity(humd);
+			
+		} else if(strcmp(commandData->cmd, "S_TET") == 0) {
+			set_temperature_threshold(commandData->temp_threshold, &threshold_data); // should be defined statically on main
+			
+		} else if(strcmp(commandData->cmd, "S_PRT") == 0) {
+			set_pressure_threshold(commandData->pres_threshold, &threshold_data);
+			
+		} else if(strcmp(commandData->cmd, "S_HUT") == 0) {
+			set_humidity_threshold(commandData->humd_threshold, &threshold_data);
+			
+		} else if(strcmp(commandData->cmd, "G_BME") == 0) {
+			sensor_data_t *all = malloc(sizeof(sensor_data_t));
+			get_all(all);
+			
+		} else if(strcmp(commandData->cmd, "G_ACL") == 0) {
+			actuator_data_t *actList = malloc(sizeof(actuator_data_t));
+			getActuatorList(actList);
+			
+		} else if(strcmp(commandData->cmd, "S_LED") == 0) {
+			actuator_data_t *led_st = malloc(sizeof(actuator_data_t));
+			led_st->led_nb = commandData->led_nb;
+			led_st->led_state = commandData->led_state;
+			changeLedState(led_st);
+			
+		} else if(strcmp(commandData->cmd, "S_REL") == 0) {
+			actuator_data_t *relay_st = malloc(sizeof(actuator_data_t));
+			relay_st->relay_state = commandData->relay_state;
+			changeRelayState(relay_st);
+			
+		} else if(strcmp(commandData->cmd, "S_LCD") == 0) {
+			actuator_data_t *lcd_st = malloc(sizeof(actuator_data_t));
+			strcpy(lcd_st->message, commandData->message);
+			displayMessage(lcd_st);
+			
+		} else if(strcmp(commandData->cmd, "G_ALA") == 0) {
+			actuator_data_t *ala_st = malloc(sizeof(actuator_data_t));
+			//sem_post(&sem_EO_AL);
+			getAlarm(ala_st);
+			
+		} else if(strcmp(commandData->cmd, "S_ALA") == 0) {
+			sem_post(&sem_EO_AL);
+			actuator_data_t *ala_st = malloc(sizeof(actuator_data_t));
+			ala_st->alarm_ = commandData->alarm_nb;
+			triggerAlarm(ala_st);
+			
+		} else if(strcmp(commandData->cmd, "G_IOS") == 0) {
+			GPIO_RESPONSE resp = malloc(sizeof(GPIO_RESPONSE));
+			get_GPIO_state(resp, commandData->GPIO_nb);
+			
+		} else if(strcmp(commandData->cmd, "S_IOS") == 0) {
+			GPIO_RESPONSE resp = malloc(sizeof(GPIO_RESPONSE));
+			set_GPIO_state(resp, commandData->GPIO_nb, commandData->GPIO_state);
+			
+		} else if(strcmp(commandData->cmd, "G_IOD") == 0) {
+			GPIO_RESPONSE resp = malloc(sizeof(GPIO_RESPONSE));
+			set_GPIO_dir(resp, commandData->GPIO_nb, commandData->GPIO_dir);
+			
+		} else if(strcmp(commandData->cmd, "S_IOD") == 0) {
+			GPIO_RESPONSE resp = malloc(sizeof(GPIO_RESPONSE));
+			get_GPIO_dir(resp, commandData->GPIO_nb);
+			
+		} else if(strcmp(commandData->cmd, "S_IOR") == 0) {
+			GPIO_RESPONSE resp = malloc(sizeof(GPIO_RESPONSE));
+			set_GPIO_res(resp, commandData->GPIO_nb, commandData->GPIO_intres);
+		}
+		
+		free(commandData);
+	}
 	
 	return NULL;
 }
@@ -72,7 +172,8 @@ void* OutputComm(void *no_arg) {
 void* FIFOStack(void *no_arg) {
 	char buffer_push[BUFFER_SIZ];
 	char buffer_pop[BUFFER_SIZ];
-	STACK* stack;
+	parsed_data_t* genStruct;
+	STACK* stack = malloc(sizeof(STACK));
 	StackInit(stack);
 	
 	while(1) {
@@ -84,13 +185,14 @@ void* FIFOStack(void *no_arg) {
 		 * - Write on protected space
 		 */ 
 		// Store last packet in a buffer
-		PacketStorage_read(&pck_s, buffer_push); 
+		PacketStorage_read(pck_s, buffer_push); 
 		// Push string into stack
 		StackPush(stack, buffer_push);
 		// Pop first string in stack
 		StackPop(stack, buffer_pop);
 		// PARSE (write into protected state)
-		
+		genStruct = parse_packet(buffer_pop);
+		ParsedStorage_write(parsed_s, genStruct);
 		// Post to let the operation execution begin
 		sem_post(&sem_FF_EO);
 	}
@@ -138,7 +240,7 @@ void* Alarm_Thread(void *no_arg) {
 		// WAIT FOR THE SEMAPHORE COMING FROM EXECOPERATION
 		sem_wait(&sem_EO_AL);
 		clock_gettime(CLOCK_REALTIME, &trigger_start);
-		alarm();
+		alarm_function();
 		while(finished==0) {
 			clock_gettime(CLOCK_REALTIME, &trigger_end);
 			if (trigger_end.tv_sec >= trigger_start.tv_sec + 60) { 
@@ -163,7 +265,11 @@ int main(void) {
 	sem_init(&sem_FF_EO, 1, 0);
 	// Initialize packet storage
 	//pck = malloc(sizeof(PacketStorage));
-	PacketStorage_init(&pck_s);
+	//PacketStorage_init(&pck_s);
+	pck_s = PacketStorage_init();
+	// Initialize parsed storage
+	parsed_s = ParsedStorage_init();
+	//ParsedStorage_init(&parsed_s);
 	
 	printf("Starting Factory: Creating Threads!\n");
 	
@@ -174,7 +280,7 @@ int main(void) {
 	}
 	
 	// Create "dummy" thread on OutputCommunication (TBM)
-	if (pthread_create(&th_IC, NULL, &OutputComm, NULL)<0) {
+	if (pthread_create(&th_OC, NULL, &OutputComm, NULL)<0) {
 		fprintf (stderr, "pthread_create error for Output Communication\n");    
 		exit (1);
 	}

@@ -3,39 +3,44 @@
 #include <string.h>
 #include <pthread.h>
 #include "parser.h"
+#include "parsed_storage.h"
 
 #define BUFFER_SIZE_PS 256
 
-typedef struct ParsedStorage ParsedStorage;
+/*typedef struct ParsedStorage ParsedStorage;
 
 struct ParsedStorage {
 	
 	pthread_mutex_t parsedMutex;
 	parsed_data_t *lastParsed;
 
-};
+};*/
 
-void ParsedStorage_init(ParsedStorage *parsed) {
+ParsedStorage ParsedStorage_init() {
 	
+	ParsedStorage parsed;
+	parsed = (ParsedStorage) malloc(sizeof(ParsedStorage));
 	//pck = (PacketStorage*) malloc(sizeof(struct PacketStorage));
 
 	pthread_mutex_init(&(parsed->parsedMutex), NULL);
+	
+	return parsed;
 
 }
 
-void ParsedStorage_read(ParsedStorage *parsed, parsed_data_t* buffer) {
+void ParsedStorage_read(ParsedStorage parsed, parsed_data_t *buffer) {
 
 	pthread_mutex_lock(&(parsed->parsedMutex));
-	parsed->lastParsed = buffer;
+	buffer = parsed->lastParsed;
 	//strcpy(buffer, parsed->lastPacket);
 	pthread_mutex_unlock(&(parsed->parsedMutex));
 
 }
 
-void ParsedStorage_write(ParsedStorage *parsed, parsed_data_t* buffer) {
+void ParsedStorage_write(ParsedStorage parsed, parsed_data_t *buffer) {
 
 	pthread_mutex_lock(&(parsed->parsedMutex));
-	*buffer = parsed->lastParsed;
+	parsed->lastParsed = buffer;
 	//strcpy(parsed->lastPacket, buffer);
 	pthread_mutex_unlock(&(parsed->parsedMutex));
 

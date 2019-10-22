@@ -36,7 +36,7 @@ struct bme280_data all_data;
 void user_delay_ms(uint32_t period);
 int8_t user_i2c_read(uint8_t id, uint8_t reg_addr, uint8_t *data, uint16_t len);
 int8_t user_i2c_write(uint8_t id, uint8_t reg_addr, uint8_t *data, uint16_t len);
-void print_sensor_data(sensor_data_t*comp_data);
+void print_sensor_data(sensor_data_t *comp_data);
 int8_t stream_sensor_data_normal_mode(struct bme280_dev *dev);
 void initBme();
 

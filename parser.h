@@ -22,14 +22,13 @@ typedef struct parsed_data {
 	bool relay_state;
 	int alarm_nb;
 	int alarm_state[3];
-	char lcd_msg[16];
-	
 	int sensor_nb;
 	double temp_threshold;
 	double pres_threshold;
 	double humd_threshold;
+	char message[16];
 	}parsed_data_t;
 
-parsed_data_t* parse_packet(char* pck);
+parsed_data_t* parse_packet();
 
 #endif /*PARSER_H_*/

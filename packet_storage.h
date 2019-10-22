@@ -1,10 +1,15 @@
 #ifndef PACKET_STORAGE_H
 #define PACKET_STORAGE_H
 
-typedef struct PacketStorage PacketStorage;
+typedef struct s_PacketStorage {
+	
+	pthread_mutex_t packetMutex;
+	char lastPacket[256];
 
-void PacketStorage_init(PacketStorage *pck);
-void PacketStorage_read(PacketStorage *pck, char* buffer);
-void PacketStorage_write(PacketStorage *pck, char* buffer);
+} *PacketStorage;
+
+PacketStorage PacketStorage_init();
+void PacketStorage_read(PacketStorage pck, char* buffer);
+void PacketStorage_write(PacketStorage pck, char* buffer);
 
 #endif

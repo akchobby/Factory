@@ -1,10 +1,17 @@
 #ifndef PARSED_STORAGE_H
 #define PARSED_STORAGE_H
 
-typedef struct ParsedStorage ParsedStorage;
+#include "parser.h"
 
-void ParsedStorage_init(ParsedStorage *parsed);
-void ParsedStorage_read(ParsedStorage *parsed, char* buffer);
-void ParsedStorage_write(ParsedStorage *parsed, char* buffer);
+typedef struct s_ParsedStorage {
+	
+	pthread_mutex_t parsedMutex;
+	parsed_data_t *lastParsed;
+	
+} *ParsedStorage;
+
+ParsedStorage ParsedStorage_init();
+void ParsedStorage_read(ParsedStorage parsed, parsed_data_t *buffer);
+void ParsedStorage_write(ParsedStorage parsed, parsed_data_t *buffer);
 
 #endif
