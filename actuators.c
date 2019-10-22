@@ -32,7 +32,7 @@ int main(int argc ,char **argv){
 
 void changeLedState (parsed_data_t *ledState) {
 	int GPIO_nb = 0;
-	if(ledState->led_nb == 1){
+	if(ledState->led_nb == 0){
 		GPIO_nb = 19;
 	} else {
 		GPIO_nb = 26;
@@ -73,6 +73,11 @@ void getAlarm(parsed_data_t *alarmState){
 		alarmState->alarm==1
 	}
 	strcpy(lcdState->cmd, "A_ALA");
+}
+
+void getActuatorList(parsed_data_t *actuatorListState){
+	actuatorListState->actuator_list[] = {"2xLED", "1xLCD", "1xRLY"};
+	strcpy(lcdState->cmd, "R_ACL");
 }
 
 void triggerAlarm(parsed_data_t *alarmState){
