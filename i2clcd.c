@@ -1,4 +1,3 @@
-
 /*
 *
 * by Lewis Loflin www.bristolwatch.com lewis@bvu.net
@@ -21,6 +20,7 @@
 #include <sys/types.h>
 #include <fcntl.h>
 #include <string.h>
+#include "sensors.h"
 
 // Define some device constants
 #define LCD_CHR  1 // Mode - Sending data
@@ -46,13 +46,13 @@ void lcdLoc(int line); //move cursor
 void ClrLcd(void); // clr LCD return home
 void typeln(const char *s);
 void typeChar(char val);
-void print_sensor_data(struct sensor_data *comp_data);
+void print_sensor_data_(sensor_data_t *comp_data);
 void display_alarm(void);
 
 int fd;  // seen by all subroutines
 char lcdMessage[16] = "Normal operation";
 
-void print_sensor_data(struct sensor_data *comp_data)
+void print_sensor_data_(sensor_data_t *comp_data)
 {
   ClrLcd();
   //#ifdef BME280_FLOAT_ENABLE
