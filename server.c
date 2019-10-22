@@ -1,8 +1,5 @@
 #include "common.h"
 
-//char buffer[MAX];
-//char buffer[296];
-
 // Function designed for chat between client and server. 
 void *process_command(void *pthread_type) {
     thread_t *pthread_arg = pthread_type;
@@ -14,27 +11,23 @@ void *process_command(void *pthread_type) {
 	//printf("Process command... %d\n", sizeof(packet_t));
 
     //receive
-    int ret = read(socket_fd, buffer, sizeof(packet_t));
-    //printf("%s\n", buffer);
-    if(ret < 0)
+    if(read(socket_fd, buffer, sizeof(packet_t)) < 0)
 		printf("Process command error... \n");
     //printf("Process command: %s\n", buffer);
+    
     //unpack
     //unmake_packet(message, (packet_t *) buffer);
     printf("Unpacking message... \n");
 	message = malloc(strlen(buffer->message));
     memcpy(message, buffer->message, strlen(buffer->message));
-    printf("Message... %s\n", message);
+    //printf("Command... %s\n", message);
     //process
     //printf("%s\n", message);
-    command_handler(message); 
+    //command_handler(message); 
+    packet_handler(buffer);
     
-    //write(socket_fd, reply, sizeof(reply));
+    //printf("Command Processed... %s\n", message);
 
-    //SENT REPLY
-    //write((socket_fd), buffer, sizeof(buffer));
-
-	
 	free(buffer);
 	free(message);
     close(socket_fd);
@@ -69,16 +62,17 @@ void *start_server_listener(void *args) {
     // assign IP, PORT
     backSocket_servaddr.sin_family = AF_INET;
     backSocket_servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-    backSocket_servaddr.sin_addr.s_addr = inet_addr(SERV);
+    backSocket_servaddr.sin_addr.s_addr = inet_addr(device.ip_address);
     backSocket_servaddr.sin_port = htons(PORT);
 
     // Binding newly created socket to given IP and verification
     if ((bind(main_sockfd, (SA *) &backSocket_servaddr, sizeof(backSocket_servaddr))) != 0) {
         printf("SERVER: socket bind failed...\n");
         //return ERROR_NO_FACTORY;
-    } else
-        printf("SERVER: Socket successfully binded..\n");
-
+    } else {
+		printf("SERVER: Socket successfully binded..\n");
+	}
+	device.isConnected = 1;
     // Now server is ready to listen and verification
     if ((listen(main_sockfd, MAX_THREADS)) != 0) {
 		printf("SERVER: Socket unsuccessfully..\n");
@@ -119,7 +113,7 @@ void *start_server_listener(void *args) {
             printf("SERVER: Server background thread error: %d\n", ERROR_NO_FACTORY);
             //free(thread_arg);
         } else
-            printf("SERVER: Server thread %d @ %s created\n", j, SERV);
+            printf("SERVER: Server thread %d @ %s created\n", j, device.ip_address);
 
         /*if(j > MAX_THREADS){
             for(j = 0; j < MAX_THREADS; j++){
