@@ -49,7 +49,7 @@ void print_sensor_data(struct sensor_data *comp_data);
 void display_alarm(void);
 
 int fd;  // seen by all subroutines
-char lcdMessage[16] = 'Normal operation';
+char lcdMessage[16] = "Normal operation";
 
 void print_sensor_data(struct sensor_data *comp_data)
 {

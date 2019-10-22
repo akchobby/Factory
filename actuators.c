@@ -19,7 +19,7 @@ void changeLedState (parsed_data_t *ledState);
 void changeRelayState (parsed_data_t *relayState);
 void displayMessage (parsed_data_t *lcdState);
 void triggerAlarm(int alarmState);
-void *alarm(void *arg);
+void *alarm_function(void *arg);
 void *lcdDisplay_thread (void *arg);
 
 
@@ -30,7 +30,7 @@ int main(int argc ,char **argv){
 }
 #endif
 
-void changeLedState (parsed_data_t *ledState) {
+void changeLedState (actuator_data_t *ledState) {
 	int GPIO_nb = 0;
 	if(ledState->led_nb == 0){
 		GPIO_nb = 19;
@@ -48,7 +48,7 @@ void changeLedState (parsed_data_t *ledState) {
 	strcpy(ledState->cmd, "A_LED");
 }
 
-void changeRelayState (parsed_data_t *relayState) {
+void changeRelayState (actuator_data_t *relayState) {
 	if(relayState->relay_state == 1){
 		set_GPIO_state(13, true);
 	} else if (ledState->relay_state == 0) {
@@ -59,14 +59,14 @@ void changeRelayState (parsed_data_t *relayState) {
 	strcpy(relayState->cmd, "A_REL");
 }
 
-void displayMessage (parsed_data_t *lcdState) {
+void displayMessage (actuator_data_t *lcdState) {
 	if(alarm == 0){
 		changeMessage(&(lcdState->message));
 	}
 	strcpy(lcdState->cmd, "A_LCD");
 }
 
-void getAlarm(parsed_data_t *alarmState){
+void getAlarm(actuator_data_t *alarmState){
 	if (alarm_state == 0){
 		alarmState->alarm==0
 	} else {
@@ -75,23 +75,23 @@ void getAlarm(parsed_data_t *alarmState){
 	strcpy(lcdState->cmd, "A_ALA");
 }
 
-void getActuatorList(parsed_data_t *actuatorListState){
+void getActuatorList(actuator_data_t *actuatorListState){
 	actuatorListState->actuator_list[] = {"2xLED", "1xLCD", "1xRLY"};
 	strcpy(lcdState->cmd, "R_ACL");
 }
 
-void triggerAlarm(parsed_data_t *alarmState){
+void triggerAlarm(actuator_data_t *alarmState){
 	if (alarmState->alarm==0){
 		alarm_state = 0;
 		set_GPIO_state(19, false);
-		changeMessage('Normal operation');
+		changeMessage("Normal operation");
 	} else {
 		alarm_state = 1;
 	}
 	strcpy(lcdState->cmd, "A_ALA");
 }
 
-void *alarm(void *arg) {
+void *alarm_function(void *arg) {
 	display_alarm();
 	ledOn (false);
 }
