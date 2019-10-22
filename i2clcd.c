@@ -13,7 +13,6 @@
 *
 */
 
-#include "bme280.h"
 #include <unistd.h>
 #include <wiringPiI2C.h>
 #include <wiringPi.h>
@@ -46,12 +45,13 @@ void lcdLoc(int line); //move cursor
 void ClrLcd(void); // clr LCD return home
 void typeln(const char *s);
 void typeChar(char val);
-void print_sensor_data(struct bme280_data *comp_data);
+void print_sensor_data(struct sensor_data *comp_data);
 void display_alarm(void);
 
 int fd;  // seen by all subroutines
+char lcdMessage[16] = "Normal operation";
 
-void print_sensor_data(struct bme280_data *comp_data)
+void print_sensor_data(struct sensor_data *comp_data)
 {
   ClrLcd();
   //#ifdef BME280_FLOAT_ENABLE
@@ -60,22 +60,24 @@ void print_sensor_data(struct bme280_data *comp_data)
 	//printf("temperature:%ld*C   pressure:%ldhPa   humidity:%ld%%\r\n",comp_data->temperature, comp_data->pressure/100, comp_data->humidity);
   //#endif
   lcdLoc(LINE1);
-  typeln("Temp: ");
-  typeFloat((float) comp_data->temperature);
+  typeln("T");
+  typeFloat((float) comp_data->value[0]);
+  typeln("P");
+  typeFloat((float) comp_data->value[1]);
+  typeln("H");
+  typeFloat((float) comp_data->value[2]);
   lcdLoc(LINE2);
-  typeln("Pres: ");
-  typeFloat((float) comp_data->pressure/100);
-
+  typeln(lcdMessage);
   
 }
 
 void display_alarm()
 {
-    ClrLcd();
-    lcdLoc(LINE1);
-    typeln("Alarm");
+    //ClrLcd();
+    //lcdLoc(LINE1);
     lcdLoc(LINE2);
-    typeln("");
+    strcpy(lcdMessage, newMessage);
+    
 }
 
 
@@ -162,4 +164,8 @@ void lcd_init(){
 void lcd_start(){
 
   lcd_init(); // setup LCD
+}
+
+void changeMessage(char * newMessage){
+	strcpy(lcdMessage, newMessage);
 }
