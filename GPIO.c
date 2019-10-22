@@ -35,9 +35,9 @@ void set_GPIO_dir(int pin_nb, bool pin_dir);
 void get_GPIO_dir(int pin_nb);
 void set_GPIO_res(int pin_nb, int res_mode);
 
-GPIO_RESPONSE GPIO_R;
+//GPIO_RESPONSE GPIO_R;
 
-int main() {
+/*int main() {
 	
 	//get_GPIO_state(0);
 	//printf("Result: %d %d\n", GPIO_R.GPIO_state, GPIO_R.GPIO_dir);
@@ -50,21 +50,21 @@ int main() {
 	get_GPIO_state(26);
 	printf("%s %d\n", GPIO_R.cmd, GPIO_R.GPIO_state);
 	return 0;
-}
+}*/
 
-void get_GPIO_state(int pin_nb) {
+void get_GPIO_state(struct* GPIO_R, int pin_nb) {
 	
 	// Initialize the wiringPi library
 	wiringPiSetupGpio();
 	
 	// Read the value of the pin, write in the structure
-	GPIO_R.GPIO_state = (bool) digitalRead(pin_nb);
+	GPIO_R->GPIO_state = (bool) digitalRead(pin_nb);
 	
-	strcpy(GPIO_R.cmd, "R_G_GPIO_S");
+	strcpy(GPIO_R->cmd, "R_G_GPIO_S");
 	
 }
 
-void set_GPIO_state(int pin_nb, bool pin_state) {
+void set_GPIO_state(struct* GPIO_R, int pin_nb, bool pin_state) {
 	
 	// Initialize the wiringPi library
 	wiringPiSetupGpio();
@@ -80,13 +80,13 @@ void set_GPIO_state(int pin_nb, bool pin_state) {
 		
 	}
 	
-	GPIO_R.GPIO_state = (bool) digitalRead(pin_nb);
+	GPIO_R->GPIO_state = (bool) digitalRead(pin_nb);
 	
-	strcpy(GPIO_R.cmd, "R_S_GPIO_S");
+	strcpy(GPIO_R->cmd, "R_S_GPIO_S");
 	
 }
 
-void get_GPIO_dir(int pin_nb) {
+void get_GPIO_dir(struct* GPIO_R, int pin_nb) {
 	
 	// Export the pin
 	char cmd1[50], cmd3[50], cmd4[50], cmd5[50], cmd6[50], cmd7[50], resp[3];
@@ -143,11 +143,11 @@ void get_GPIO_dir(int pin_nb) {
 	}
 	
 	
-	strcpy(GPIO_R.cmd, "R_G_GPIO_D");
+	strcpy(GPIO_R->cmd, "R_G_GPIO_D");
 	
 }
 
-void set_GPIO_dir(int pin_nb, bool pin_dir) {
+void set_GPIO_dir(struct* GPIO_R, int pin_nb, bool pin_dir) {
 	
 	// Initialize the wiringPi library
 	wiringPiSetupGpio();
@@ -166,11 +166,11 @@ void set_GPIO_dir(int pin_nb, bool pin_dir) {
 	// Call get_GPIO_dir but don't write o
 	get_GPIO_dir(pin_nb);
 	
-	strcpy(GPIO_R.cmd, "R_S_GPIO_D");
+	strcpy(GPIO_R->cmd, "R_S_GPIO_D");
 	
 }
 
-void set_GPIO_res(int pin_nb, int res_mode) {
+void set_GPIO_res(struct* GPIO_R, int pin_nb, int res_mode) {
 	
 	// Initialize the wiringPi library
 	wiringPiSetupGpio();
@@ -190,8 +190,8 @@ void set_GPIO_res(int pin_nb, int res_mode) {
 		
 	}
 	
-	GPIO_R.GPIO_intres = (short) res_mode;
+	GPIO_R->GPIO_intres = (short) res_mode;
 	
-	strcpy(GPIO_R.cmd, "R_S_GPIO_R");
+	strcpy(GPIO_R->cmd, "R_S_GPIO_R");
 	
 }
