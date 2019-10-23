@@ -158,6 +158,7 @@ void* ExecOperation(void *no_arg) {
 void* InputComm(void *no_arg) {
 	
 	// Post the semaphore to allow FF to work
+	//PacketStorage_write(pck_s, );
 	sem_post(&sem_IC_FF);
 	return NULL;
 }
@@ -170,9 +171,9 @@ void* OutputComm(void *no_arg) {
 
 /* FIFO STACK AUXILIARY FUNCTIONS MOVED TO OWN FILE */
 void* FIFOStack(void *no_arg) {
-	char buffer_push[BUFFER_SIZ];
-	char buffer_pop[BUFFER_SIZ];
-	parsed_data_t* genStruct;
+	char *buffer_push = malloc((BUFFER_SIZ+1)*sizeof(char));
+	char *buffer_pop = malloc((BUFFER_SIZ+1)*sizeof(char));
+	parsed_data_t* genStruct = malloc(sizeof(parsed_data_t));
 	STACK* stack = malloc(sizeof(STACK));
 	StackInit(stack);
 	
@@ -191,11 +192,14 @@ void* FIFOStack(void *no_arg) {
 		// Pop first string in stack
 		StackPop(stack, buffer_pop);
 		// PARSE (write into protected state)
+		strcpy(buffer_pop, "cmd:G_PRT");
 		genStruct = parse_packet(buffer_pop);
 		ParsedStorage_write(parsed_s, genStruct);
 		// Post to let the operation execution begin
 		sem_post(&sem_FF_EO);
 	}
+	free(buffer_push);
+	free(buffer_pop);
 	pthread_exit(NULL);
 }
 
@@ -203,8 +207,8 @@ void* SendDataPeriodic(void* period_str) {
 	// INICIALIZA LA ESTRUCTURA
 	sensor_data_t PSD;
 	// INDICA EL COMANDO
-	char cmd_name[5] = "S_BCS";
-	strcpy(PSD.cmd, cmd_name);
+	//char cmd_name[5] = "S_BCS";
+	strcpy(PSD.cmd, "S_BCS");
 	//PSD.cmd = "S_BCS";
 	PSD.id = 0;
 	// Declare semaphore to make sure the function waits
@@ -266,10 +270,11 @@ int main(void) {
 	// Initialize packet storage
 	//pck = malloc(sizeof(PacketStorage));
 	//PacketStorage_init(&pck_s);
+	
 	pck_s = PacketStorage_init();
 	// Initialize parsed storage
+	//parsed_s = ParsedStorage_init();
 	parsed_s = ParsedStorage_init();
-	//ParsedStorage_init(&parsed_s);
 	
 	printf("Starting Factory: Creating Threads!\n");
 	

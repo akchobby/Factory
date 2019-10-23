@@ -25,7 +25,7 @@ struct STACK {
 void StackInit(STACK *p_stack) {
 	//p_stack->array = {[0 ... CAPACITY-1] = INT_MAX};
 	p_stack->nb_elem = 0;
-	p_stack->lowestFree = INT_MAX;	
+	p_stack->lowestFree = 0;	
 	for (int i=0; i<CAPACITY; i++) {
 		p_stack->array[i] = INT_MAX;
 		p_stack->stack[i] = malloc(BUFFER_SIZE*sizeof(char));		

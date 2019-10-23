@@ -20,7 +20,7 @@ struct PacketStorage {
 PacketStorage PacketStorage_init() {
 	
 	PacketStorage pck;
-	pck = (PacketStorage) malloc(sizeof(PacketStorage));
+	pck = (PacketStorage) malloc(sizeof(struct s_PacketStorage));
 	
 	//pck = (PacketStorage*) malloc(sizeof(struct PacketStorage));
 
@@ -33,7 +33,8 @@ PacketStorage PacketStorage_init() {
 void PacketStorage_read(PacketStorage pck, char* buffer) {
 
 	pthread_mutex_lock(&(pck->packetMutex));
-	strcpy(buffer, (pck->lastPacket));
+	strncpy(buffer, pck->lastPacket, (size_t) BUFFER_SIZE_PS); 
+	//strcpy(buffer, (pck->lastPacket));
 	pthread_mutex_unlock(&(pck->packetMutex));
 
 }

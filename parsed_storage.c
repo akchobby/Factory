@@ -19,9 +19,10 @@ struct ParsedStorage {
 ParsedStorage ParsedStorage_init() {
 	
 	ParsedStorage parsed;
-	parsed = (ParsedStorage) malloc(sizeof(ParsedStorage));
+	//printf("test\n");
+	parsed = (ParsedStorage) malloc(sizeof(struct s_ParsedStorage));
 	//pck = (PacketStorage*) malloc(sizeof(struct PacketStorage));
-
+	//printf("test2\n");
 	pthread_mutex_init(&(parsed->parsedMutex), NULL);
 	
 	return parsed;

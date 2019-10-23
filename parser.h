@@ -29,6 +29,6 @@ typedef struct parsed_data {
 	char message[16];
 	}parsed_data_t;
 
-parsed_data_t* parse_packet();
+parsed_data_t* parse_packet(char *pck);
 
 #endif /*PARSER_H_*/

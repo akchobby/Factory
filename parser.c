@@ -7,14 +7,14 @@ parsed_data_t* parse_packet(char* pck){
 	data.alarm_state[1] =0;
 	data.alarm_state[2] =0;
 	parsed_data_t* dashboardCmd = malloc(sizeof(parsed_data_t));
-	char buffer[200];
+	//char buffer[257];
 	#ifdef TEST
-	strncpy(buffer, "cmd:S_TET, msg:26",sizeof(buffer) -1);
+	//strncpy(buffer, "cmd:G_IOS, threshold:26",sizeof(buffer) -1);
 	#else
-	strcpy(buffer,pck);
+	//strncpy(buffer, pck, (size_t) 257);
 	#endif
 	char *p;
-	p = strtok(buffer, " :, ");
+	p = strtok(pck, " :, ");
 
 	p = strtok(NULL, " :, ");
 
@@ -111,13 +111,6 @@ parsed_data_t* parse_packet(char* pck){
 	
 		
 	} else if(strcmp(data.cmd, "S_LCD")==0) {
-		//message
-		for(int i = 0;i<2;i++){
-		p = strtok(NULL, " :, ");
-		}
-		strncpy(data.lcd_msg,p,sizeof(data.lcd_msg)); 
-
-		
 		
 		
 	} else if(strcmp(data.cmd, "G_ALA")==0) {
@@ -234,10 +227,9 @@ parsed_data_t* parse_packet(char* pck){
 	}
 #ifdef TEST
 int main(){
-	char* pck;
+	packet_t pck;
 	free(parse_packet(pck));
 	return 0;
 	
 	}
 #endif
-
