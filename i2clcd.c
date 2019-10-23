@@ -85,7 +85,7 @@ void display_alarm()
 // float to string
 void typeFloat(float myFloat)   {
   char buffer[20];
-  sprintf(buffer, "%4.2f",  myFloat);
+  sprintf(buffer, "%4.0f",  myFloat);
   typeln(buffer);
 }
 
