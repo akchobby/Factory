@@ -9,7 +9,7 @@ typedef struct actuator_data{
 	char message[16];
 	int alarm_;
 	int id;
-	char *actuator_list[];
+	char *actuator_list;
 	
 }actuator_data_t;
 

@@ -53,8 +53,18 @@ void response_aperiodic_sensor(sensor_data_t *data, char* unparse){
 }
 
 void response_aperiodic_actuator(actuator_data_t *data, char* unparse){
+	char cpyvalue[10];
+	strcpy(unparse, "cmd:");
+	strcat(unparse, data->cmd);
+	bzero(cpyvalue, sizeof(cpyvalue));
+	if(strcmp(data->cmd, "R_ACL")==0){
+		strcat(unparse, ",List:");
+		snprintf(cpyvalue, 18, "%s", data->actuator_list);
+		strcat(unparse, cpyvalue);
+		bzero(cpyvalue, sizeof(cpyvalue));
+	}
 	//char unparse[256];
-	strcpy(unparse, "Done Actuation");
+	strcat(unparse, "Done Actuation");
 	printf("%s",unparse);
 	//make_packet(unparse);
 	

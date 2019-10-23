@@ -86,10 +86,7 @@ void getAlarm(actuator_data_t *alarmState){
 }
 
 void getActuatorList(actuator_data_t *actuatorListState){
-	//actuatorListState->actuator_list = {"2xLED", "1xLCD", "1xRLY"};
-	actuatorListState->actuator_list[0] = "2xLED";
-	actuatorListState->actuator_list[1] = "1xLCD";
-	actuatorListState->actuator_list[2] = "1xRLY";
+	strncpy(actuatorListState->actuator_list, "2xLED 1xLCD 1xRLY",(size_t) 18);
 	strcpy(actuatorListState->cmd, "R_ACL");
 }
 
