@@ -40,8 +40,8 @@
 #include "bme280.h"
 #include "unparser.h"
 #include "common.h"
-//#include "client.h"
-//#include "server.h"
+#include "client.h"
+#include "server.h"
 
 // PREDEFINED VALUES
 
@@ -66,12 +66,13 @@ sensor_threshold_t threshold_data;
 void* ExecOperation(void *no_arg) {
 	parsed_data_t *commandData = malloc(sizeof(parsed_data_t));
 	char *buffer_out = malloc((BUFFER_SIZ+1)*sizeof(char));
+	
 	//int factoryNumber;
 	// Wait for semaphore to synchronize with FF
 	while(1) {
 		sem_wait(&sem_FF_EO);
 		ParsedStorage_read(parsed_s, commandData);
-		
+		printf("%s\n", commandData->cmd);
 		if(strcmp(commandData->cmd, "S_CMS_D") == 0) {
 		
 		} else if(strcmp(commandData->cmd, "S_CMS_F") == 0) {
@@ -173,14 +174,14 @@ void* ExecOperation(void *no_arg) {
 			set_GPIO_res(resp, commandData->GPIO_nb, commandData->GPIO_intres);
 			response_aperiodic_gpio(resp, buffer_out);
 		} else if(strcmp(commandData->cmd, "P_IP") == 0) {		
-			listDevices[pointer].ip_address = commandData->ip_address;
-			listDevices[pointer].isConnected = 1;
-			listDevices[pointer++].type = FACTORY;
+			strncat(list_devices[pointer].ip_address, &commandData->cmd[4], 14);
+			list_devices[pointer].isConnected = 1;
+			list_devices[pointer++].type = FACTORY;
 		}
 		
 		free(commandData);
 		PacketStorage_write(output_pck, buffer_out);
-		//sendMessage(DASHBOARD, output_pck);
+		send_message(DASHBOARD, output_pck);
 	}
 	
 	return NULL;
@@ -223,7 +224,7 @@ void* FIFOStack(void *no_arg) {
 		// Pop first string in stack
 		StackPop(stack, buffer_pop);
 		// PARSE (write into protected state)
-		strcpy(buffer_pop, "cmd:G_SEL");
+		//strcpy(buffer_pop, "cmd:G_SEL");
 		genStruct = parse_packet(buffer_pop);
 		ParsedStorage_write(parsed_s, genStruct);
 		// Post to let the operation execution begin
@@ -263,11 +264,10 @@ void* SendDataPeriodic(void* period_str) {
 		sem_timedwait(&SDP_sem, &trigger_time);
 		// GET ALL VALUES FROM THE SENSOR
 		get_all(&PSD);
-		lcdDisplay_thread(&PSD);
 		// SEND TO DASHBOARDS AND FACTORIES
 		response_period(&PSD, buffer_out);
 		PacketStorage_write(periodic_pck, buffer_out);
-		//send_message(ALL, periodic_pck);
+		send_message(ALL, periodic_pck);
 		free(buffer_out);
 	}
 	pthread_exit(NULL);
@@ -295,7 +295,7 @@ void* Alarm_Thread(void *no_arg) {
 int main(void) {
 	
 	// THREAD AND ATTRIBUTE DECLARATION
-	pthread_t th_FF, th_EO, th_SD, th_AL;
+	pthread_t th_FF, th_EO, th_SD, th_AL, server;
 	//pthread_attr_t th_at_IC, th_at_OC, th_at_FF, th_at_EO, th_at_SD, th_at_AL;
 	
 	printf("Starting Factory: Setting up communication mechanisms!\n");
@@ -329,6 +329,23 @@ int main(void) {
 		exit (1);
 	}
 	*/
+	pthread_attr_t attr;
+	
+	if (pthread_attr_init(&attr) != 0) {
+        printf("SERVER: pthread_attr_init");
+        //return ERROR_NO_FACTORY;
+    }
+    if (pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED) != 0) {
+        printf("SERVER: pthread_attr_setdetachstate");
+        //return ERROR_NO_FACTORY;
+    }
+    
+    init_communications();
+    
+	if (pthread_create(&server, &attr, &start_server_listener, NULL)) {
+		fprintf (stderr, "pthread_create error for Server\n");    
+		exit (1);
+	}
 	// Create thread on FIFO Stack
 	if (pthread_create(&th_FF, NULL, &FIFOStack, NULL)) {
 		fprintf (stderr, "pthread_create error for FIFO Stack\n");    
@@ -361,6 +378,7 @@ int main(void) {
 	// Join threads again to guarantee orderly exit
 	//pthread_join(th_IC,0);
 	//pthread_join(th_OC,0);
+	pthread_join(server,0);
 	pthread_join(th_FF,0);
 	pthread_join(th_EO,0);
 	pthread_join(th_SD,0);
