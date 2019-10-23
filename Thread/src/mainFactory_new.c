@@ -66,6 +66,7 @@ sensor_threshold_t threshold_data;
 void* ExecOperation(void *no_arg) {
 	parsed_data_t *commandData = malloc(sizeof(parsed_data_t));
 	char *buffer_out = malloc((BUFFER_SIZ+1)*sizeof(char));
+	//int factoryNumber;
 	// Wait for semaphore to synchronize with FF
 	while(1) {
 		sem_wait(&sem_FF_EO);
@@ -171,6 +172,10 @@ void* ExecOperation(void *no_arg) {
 			GPIO_RESPONSE resp = malloc(sizeof(GPIO_RESPONSE));
 			set_GPIO_res(resp, commandData->GPIO_nb, commandData->GPIO_intres);
 			response_aperiodic_gpio(resp, buffer_out);
+		} else if(strcmp(commandData->cmd, "P_IP") == 0) {		
+			listDevices[pointer].ip_address = commandData->ip_address;
+			listDevices[pointer].isConnected = 1;
+			listDevices[pointer++].type = FACTORY;
 		}
 		
 		free(commandData);
